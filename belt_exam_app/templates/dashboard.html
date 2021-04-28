@@ -1,0 +1,133 @@
+{% load  poll_extras %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bright Ideas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+    <style>
+        .submitBtn {
+            color: blue;
+            border: none;
+            background: white;
+        }
+        .submitBtn:hover {
+            color: royalblue;
+        }
+    </style>
+</head>
+<body>    
+    <div class="container-fluid">    
+        <div class="mt-4 mb-4 row">
+            <div class="col-md-1">
+                <h6>Hi {{user.last_name}}!</h6>
+            </div>
+            <div class="col-md-1">                
+            </div>
+            <div class="col-md-10">
+                <h6 class="text-end">
+                    <a href="{% url 'logout' %}">logout</a>                    
+                </h6>
+            </div>
+        </div>                
+
+        <div class="mt-4 mb-4 row">
+            <form action="/addIdea" method="POST" class="row">
+                {% csrf_token %}
+                <div class="col-sm-9 my-1">                    
+                    <input type="text" name="idea" class="form-control" id="idea" placeholder="Post something witty here...">
+                </div>
+                <div class="col-sm-3 my-1">
+                    <button type="submit" class="btn btn-primary">Idea</button>
+                </div>
+            </form>
+        </div>                
+
+        {% for idea in ideas %}
+        <form action="/addLike" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="posted_user_id" value="{{ idea.user.id  }}">
+            <input type="hidden" name="idea" value="{{ idea.idea }}">
+            <input type="hidden" name="idea_id" value="{{ idea.id }}">
+            <div class="mt-4 mb-4 row">
+                <div class="col-md-2"> 
+                    <a href="{% url 'getUser' idea.id %}">{{idea.user.last_name}}</a> says: </div>
+                <div class="col-md-8" style="border: 1px solid black">
+                    {{ idea.idea }}
+                </div>
+                {% if idea.user.id == user.id %}
+                <div class="col-md-2"> 
+                    <a href="{% url 'remove' idea.id %}">Remove</a>                    
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <button class="submitBtn" type="submit">Like</button>                          
+                    <a href="{% url 'bright_ideas' idea.id %}">                                                                                            
+                        {% like_counter idea.id %}
+                    people
+                    </a> like this
+                </div>            
+            </div>
+        </form>
+        {% endfor %}
+        
+        <!-- <div class="row">
+            <div class="col-md-8">
+                <table class="table">       
+                    <thead>
+                        <tr>
+                            <th>JOB</th>
+                            <th>Location</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>         
+                    <tbody>
+                        {% for job in jobs %}
+                            <tr>
+                                <td>{{job.title}}</td>
+                                <td>{{job.location}}</td>
+                                <td>
+                                    <a href="{% url 'get_job' job.id %}">View</a>
+                                    <a href="{% url 'addMyJob' job.id %}">add</a>
+                                    {% if job.user == user %}
+                                    <a href="{% url 'edit' job.id %}">edit</a>
+                                    <a href="{% url 'remove' job.id %}">cancel</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>            
+            <div class="col-md-4">
+                <table class="table">       
+                    <thead>
+                        <tr>
+                            <th>MyJobs ...</th>
+                            <th></th>                            
+                        </tr>
+                    </thead> 
+                    <tbody>
+                        {% for myjob in myjobs %}
+                            <tr>
+                                <td>{{myjob.title}}</td>                                
+                                <td>
+                                    <a href="{% url 'get_job' myjob.id %}">View</a>
+                                    <a href="{% url 'removeMyJob' myjob.id %}">Done</a>                                    
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>        
+                </table>
+            </div>
+        </div>         -->
+    </div>
+</body>
+</html>
